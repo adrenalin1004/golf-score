@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>골프 스코어 기록</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .center {
+            text-align: center;
+        }
+        .button {
+            padding: 10px 20px;
+            text-decoration: none;
+            color: white;
+            background-color: blue;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="center">골프 스코어 기록</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>홀</th>
+                <th>파</th>
+                <th>스코어</th>
+                <th>사용한 클럽</th>
+                <th>수정</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for hole_id, hole in enumerate(holes) %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ hole.par }}</td>
+                <td>{{ hole.score }}</td>
+                <td>{{ hole.clubs | join(', ') }}</td>
+                <td><a href="{{ url_for('edit', hole_id=hole_id) }}" class="button">수정</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="center">
+        <p>총 스코어: {{ total_score }}</p>
+        <a href="{{ url_for('add') }}" class="button">새 점수 추가</a>
+    </div>
+</body>
+</html>
