@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>점수 수정</title>
+    <title>홀 기록</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -31,12 +31,13 @@
             background-color: blue;
             border: none;
             border-radius: 5px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <h1 class="center">점수 수정</h1>
-    <form method="POST" action="{{ url_for('edit', course_name=course_name, date=date, hole_id=hole_id) }}">
+    <h1 class="center">홀 {{ hole_id + 1 }} 기록</h1>
+    <form method="POST" action="{{ url_for('record', course_name=course_name, date=date, hole_id=hole_id) }}">
         <div class="form-group">
             <label for="par">파</label>
             <input type="number" id="par" name="par" value="{{ hole.par }}" required>
@@ -50,7 +51,7 @@
             <input type="text" id="clubs" name="clubs" value="{{ hole.clubs | join(', ') }}" required>
         </div>
         <div class="center">
-            <button type="submit" class="button">수정</button>
+            <button type="submit" class="button">저장</button>
         </div>
     </form>
 </body>

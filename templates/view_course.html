@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>골프 스코어 기록</title>
+    <title>{{ course_name }} - {{ date }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -38,17 +38,32 @@
     </style>
 </head>
 <body>
-    <h1 class="center">골프 스코어 기록</h1>
-    <div class="center">
-        <a href="{{ url_for('add') }}" class="button">새 골프장 추가</a>
-    </div>
-    {% for course_name, dates in golf_courses.items() %}
-        <h2>{{ course_name }}</h2>
-        <ul>
-            {% for date in dates.keys() %}
-                <li><a href="{{ url_for('view_course', course_name=course_name, date=date) }}">{{ date }}</a></li>
+    <h1 class="center">{{ course_name }} - {{ date }}</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>홀</th>
+                <th>파</th>
+                <th>스코어</th>
+                <th>사용한 클럽</th>
+                <th>수정</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for hole_id, hole in enumerate(holes) %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ hole.par }}</td>
+                <td>{{ hole.score }}</td>
+                <td>{{ hole.clubs | join(', ') }}</td>
+                <td><a href="{{ url_for('record', course_name=course_name, date=date, hole_id=hole_id) }}" class="button">수정</a></td>
+            </tr>
             {% endfor %}
-        </ul>
-    {% endfor %}
+        </tbody>
+    </table>
+    <div class="center">
+        <p>총 스코어: {{ total_score }}</p>
+        <a href="{{ url_for('index') }}" class="button">홈으로</a>
+    </div>
 </body>
 </html>
