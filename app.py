@@ -1,5 +1,3 @@
-#chat gpt가 작성
-
 from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
@@ -27,28 +25,19 @@ def add():
     if request.method == 'POST':
         course_name = request.form['course_name']
         date = request.form['date']
-        par = int(request.form['par'])
-        score = int(request.form['score'])
-        clubs = request.form['clubs'].split(',')
 
         if course_name not in golf_courses:
             golf_courses[course_name] = {}
 
         if date not in golf_courses[course_name]:
-            golf_courses[course_name][date] = []
+            golf_courses[course_name][date] = [{'par': 0, 'score': 0, 'clubs': []} for _ in range(18)]
 
-        hole_record = {
-            'par': par,
-            'score': score,
-            'clubs': clubs
-        }
-        golf_courses[course_name][date].append(hole_record)
-        return redirect(url_for('index'))
+        return redirect(url_for('view_course', course_name=course_name, date=date))
 
     return render_template('add.html')
 
-@app.route('/edit/<course_name>/<date>/<int:hole_id>', methods=['GET', 'POST'])
-def edit(course_name, date, hole_id):
+@app.route('/record/<course_name>/<date>/<int:hole_id>', methods=['GET', 'POST'])
+def record(course_name, date, hole_id):
     if request.method == 'POST':
         par = int(request.form['par'])
         score = int(request.form['score'])
@@ -62,7 +51,7 @@ def edit(course_name, date, hole_id):
         return redirect(url_for('view_course', course_name=course_name, date=date))
 
     hole = golf_courses[course_name][date][hole_id]
-    return render_template('edit.html', hole=hole, hole_id=hole_id, course_name=course_name, date=date)
+    return render_template('record.html', hole=hole, hole_id=hole_id, course_name=course_name, date=date)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=80)
