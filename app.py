@@ -4,54 +4,65 @@ from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
-# 각 홀의 파 값과 사용한 클럽을 저장할 리스트
-holes = []
+golf_courses = {}
 
-# 템플릿에서 enumerate를 사용할 수 있도록 설정
 @app.context_processor
 def utility_processor():
     return dict(enumerate=enumerate)
 
 @app.route('/')
 def index():
-    total_score = sum(hole['score'] for hole in holes)
-    return render_template('index.html', holes=holes, total_score=total_score)
+    return render_template('index.html', golf_courses=golf_courses)
+
+@app.route('/course/<course_name>/<date>')
+def view_course(course_name, date):
+    if course_name in golf_courses and date in golf_courses[course_name]:
+        holes = golf_courses[course_name][date]
+        total_score = sum(hole['score'] for hole in holes)
+        return render_template('view_course.html', holes=holes, total_score=total_score, course_name=course_name, date=date)
+    return "No records found for this course and date.", 404
 
 @app.route('/add', methods=['GET', 'POST'])
 def add():
     if request.method == 'POST':
+        course_name = request.form['course_name']
+        date = request.form['date']
         par = int(request.form['par'])
         score = int(request.form['score'])
         clubs = request.form['clubs'].split(',')
 
-        # 홀 기록 저장
+        if course_name not in golf_courses:
+            golf_courses[course_name] = {}
+
+        if date not in golf_courses[course_name]:
+            golf_courses[course_name][date] = []
+
         hole_record = {
             'par': par,
             'score': score,
             'clubs': clubs
         }
-        holes.append(hole_record)
+        golf_courses[course_name][date].append(hole_record)
         return redirect(url_for('index'))
 
     return render_template('add.html')
 
-@app.route('/edit/<int:hole_id>', methods=['GET', 'POST'])
-def edit(hole_id):
+@app.route('/edit/<course_name>/<date>/<int:hole_id>', methods=['GET', 'POST'])
+def edit(course_name, date, hole_id):
     if request.method == 'POST':
         par = int(request.form['par'])
         score = int(request.form['score'])
         clubs = request.form['clubs'].split(',')
 
-        # 수정된 기록 저장
-        holes[hole_id] = {
+        golf_courses[course_name][date][hole_id] = {
             'par': par,
             'score': score,
             'clubs': clubs
         }
-        return redirect(url_for('index'))
+        return redirect(url_for('view_course', course_name=course_name, date=date))
 
-    hole = holes[hole_id]
-    return render_template('edit.html', hole=hole, hole_id=hole_id)
+    hole = golf_courses[course_name][date][hole_id]
+    return render_template('edit.html', hole=hole, hole_id=hole_id, course_name=course_name, date=date)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=80)
